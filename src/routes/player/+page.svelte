@@ -1,11 +1,46 @@
+<script>
+    // @ts-ignore
+    import { invoke } from "@tauri-apps/api/core"
+    import { exists, BaseDirectory } from '@tauri-apps/plugin-fs'
+    import { appDataDir } from '@tauri-apps/api/path'
+
+    let name = $state("")
+    let greetMsg = $state("")
+    let default_url = ""
+    let song = $state(new Audio("songs/test.mp3"))
+
+    // @ts-ignore
+    async function greet(event) {
+        event.preventDefault()
+        greetMsg = await invoke("greet", { name })
+    }
+
+    async function defaultUrl() {
+        default_url = await invoke("get_env", { key: "API_URL" })
+    }
+
+    async function play() {
+        default_url = await invoke("get_env", { key: "API_URL" })
+        greetMsg = default_url/*  ?? "No URL" */
+        // song.play()
+    }
+
+    function pause() {
+        song.pause()
+    }
+
+    // async function importSong(song) {}
+</script>
 <main>
     <div class="album-background">
         <div class="white-space"></div>
         <div class="song-info">
-            <span class="song-name">Nome</span>
+            <span class="song-name">{greetMsg}</span>
         </div>
         <div class="play-pause">
-            <button>Play</button>
+            <div role="button" tabindex="0" onclick={play} onkeydown={(e) => e.key === 'Enter' && play()} class="svg-button" aria-label="Play">
+                <img src="icons/play-button.svg" alt="Play button" />
+            </div>
         </div>
         <div class="song-progress">
             <progress value="42" max="100"> 42% </progress>
@@ -21,11 +56,6 @@
         </div>
     </div>
 </main>
-<script>
-    function home() {
-        window.location.href = "/";
-    }
-</script>
 <style>
     .album-background {
         height: 100vh;
@@ -55,13 +85,7 @@
         align-items: center;
         margin: 20px 0;
     }
-    
-    .play-pause button {
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-    
+
     .song-progress {
         display: flex;
         justify-content: center;
@@ -109,5 +133,28 @@
         border: 1px solid #000;
         box-shadow: none;
         background-color: transparent;
+    }
+
+    .svg-button {
+        width: 50px;
+        height: 50px;
+    }
+
+    .svg-button:hover {
+        cursor: pointer;
+    }
+
+    .svg-button img {
+        filter: invert(58%) sepia(37%) saturate(5463%) hue-rotate(1deg) brightness(104%) contrast(104%);
+        width: 100%;
+        height: 100%;
+    }
+
+    .svg-button:click {
+        filter: invert(58%) sepia(37%) saturate(5463%) hue-rotate(1deg) brightness(104%) contrast(104%);
+    }
+
+    .svg-button img:click {
+        filter: invert(58%) sepia(37%) saturate(5463%) hue-rotate(1deg) brightness(104%) contrast(104%);
     }
 </style>

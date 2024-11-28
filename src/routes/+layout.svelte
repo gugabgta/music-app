@@ -1,9 +1,9 @@
-<svelte:body onclick={ handler } />
+<svelte:body onclick={ toogleNavVisibility } />
 <script>
     let { children, } = $props();
     let nav_visible = $state(true);
 
-    function handler() {
+    function toogleNavVisibility() {
         nav_visible = !nav_visible;
     }
 </script>

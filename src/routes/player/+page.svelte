@@ -1,51 +1,20 @@
 <script>
 // @ts-nocheck
-
     import { invoke } from "@tauri-apps/api/core"
-    import { fetch } from '@tauri-apps/plugin-http';
-
+    
+    let { data } = $props()
     let name = $state("idk yet")
     let default_url = ""
-    let song = $state(new Audio("songs/test.mp3"))
-    let song_id = $state(100)
     let song_state = $state("paused")
     let progress = $state(0)
-    let blobURL = ""
     let slider
 
-    async function importSong() {
-        await defaultUrl()
-        const idk = fetch(`${default_url}/song?id=${song_id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'audio/mpeg',
-                'Access-Control-Allow-Origin': '*',
-            }
-        })
-
-        const response = await idk;
-
-        if (!response.ok) {
-            console.error(await response.json())
-            return false
-        }
-
-        const blob = await response.blob();
-
-        blobURL = window.URL.createObjectURL(blob);
-        pause()
-        song = new Audio(blobURL);
-        song.addEventListener("ended", () => pause())
-        song.addEventListener("timeupdate", () => {
-            progress = Math.ceil(song.currentTime / song.duration * 1000)
-            slider.style.background = `linear-gradient(to right, green ${slider.value/10}%, #ccc ${slider.value/10}%)`;
-        })
-        return true
-    }
-
-    async function defaultUrl() {
-        default_url = await invoke("get_env", { key: "API_URL" })
-    }
+    const song = new Audio(data.song);
+    song.addEventListener("ended", () => pause())
+    song.addEventListener("timeupdate", () => {
+        progress = Math.ceil(song.currentTime / song.duration * 1000)
+        slider.style.background = `linear-gradient(to right, green ${slider.value/10}%, #ccc ${slider.value/10}%)`;
+    })
 
     async function play() {
         song_state = "playing"
@@ -84,8 +53,6 @@
         <div class="white-space"></div>
         <div class="song-info">
             <span class="song-name">{name}</span>
-            <input type="number" bind:value={song_id}>
-            <button onclick={importSong}>Load</button>
         </div>
         <div class="play-pause">
             {#if song_state === "paused"}
@@ -195,11 +162,6 @@
         justify-content: center;
         align-items: center;
         margin: 20px 0;
-    }
-
-    .song-progress progress {
-        width: 80%;
-        height: 20px;
     }
 
     .media-buttons {

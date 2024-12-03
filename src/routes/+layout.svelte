@@ -2,6 +2,7 @@
 <script>
     let { children, } = $props();
     let nav_visible = $state(true);
+    let current_song = $state(null);
 
     function toogleNavVisibility() {
         nav_visible = !nav_visible;
@@ -11,7 +12,7 @@
     <nav style="">
         <a href="/">Home</a>
         <a href="/player">Player</a>
-        <a href="/settings">Settings</a>
+        <a href="/playlist">Playlist</a>
     </nav>
 {/if}
 
